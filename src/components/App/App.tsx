@@ -1,5 +1,6 @@
 import toast, { Toaster } from 'react-hot-toast';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import type { Movie } from '../../types/movie';
 import { fetchMovies } from '../../services/movieService';
 import css from './App.module.css';
@@ -10,30 +11,23 @@ import ErrorMessage from '../ErrorMessage/ErrorMessage';
 import MovieModal from '../MovieModal/MovieModal';
 
 function App() {
-  const [movies, setMovies] = useState<Movie[]>([]);
+  const [query, setQuery] = useState('');
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
-  const [error, setError] = useState(false);
-  const [loading, setLoading] = useState(false);
 
-  const handleMoviesSearch = async (query: string) => {
-    try {
-      setMovies([]);
-      setError(false);
-      setLoading(true);
+  const { data, isLoading, isError, isSuccess } = useQuery({
+    queryKey: ['movies', query],
+    queryFn: () => fetchMovies(query),
+    enabled: Boolean(query),
+  });
 
-      const results = await fetchMovies(query);
-
-      if (!results.length) {
-        toast('No movies found for your request.');
-        return;
-      }
-
-      setMovies(results);
-    } catch {
-      setError(true);
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    if (isSuccess && !data.length) {
+      toast('No movies found for your request.');
     }
+  }, [isSuccess, data]);
+
+  const handleMoviesSearch = (query: string) => {
+    setQuery(query);
   };
 
   const handleMovieClick = (movie: Movie) => {
@@ -47,11 +41,11 @@ function App() {
   return (
     <div className={css.app}>
       <SearchBar onSubmit={handleMoviesSearch} />
-      {movies.length > 0 && (
-        <MovieGrid onSelect={handleMovieClick} movies={movies} />
+      {data && data.length > 0 && (
+        <MovieGrid onSelect={handleMovieClick} movies={data} />
       )}
-      {loading && <Loader />}
-      {error && <ErrorMessage />}
+      {isLoading && <Loader />}
+      {isError && <ErrorMessage />}
       {selectedMovie && (
         <MovieModal movie={selectedMovie} onClose={handleModalClose} />
       )}
