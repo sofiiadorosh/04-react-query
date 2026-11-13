@@ -15,9 +15,12 @@ const TMDB = axios.create({
   },
 });
 
-export async function fetchMovies(query: string): Promise<Movie[]> {
+export async function fetchMovies(
+  query: string,
+  page: number,
+): Promise<FetchMoviesResponse> {
   const { data } = await TMDB.get<FetchMoviesResponse>('/search/movie', {
-    params: { query },
+    params: { query, page },
   });
-  return data.results;
+  return data;
 }
