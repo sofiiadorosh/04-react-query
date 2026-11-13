@@ -62,7 +62,7 @@ function App() {
       {selectedMovie && (
         <MovieModal movie={selectedMovie} onClose={handleModalClose} />
       )}
-      {isSuccess && data.total_pages > 0 && (
+      {isSuccess && data.total_pages > 1 && (
         <ReactPaginate
           pageCount={data.total_pages}
           pageRangeDisplayed={5}
