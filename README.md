@@ -6,7 +6,7 @@ by page with [TanStack Query](https://tanstack.com/query/latest) and split
 into pages with [React Paginate](https://github.com/AdeleD/react-paginate).
 Click a movie card to see its details in a modal window.
 
-**Live demo:** _add the Vercel link here_
+**Live demo:** https://04-react-query-ten-orcin.vercel.app/
 
 ## Features
 
